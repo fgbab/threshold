@@ -3,7 +3,7 @@
 import * as C from './core.js';
 import { S, AUTO, TEST, JUMP, MODE, NATIVE, SPEED, $, wait, until, clamp, esc, ROMAN, store, saveP, cards, audio, voice, buzz, keepAwake, letSleep, startMotion, startCamera, stopCamera, say, instruct, hud, hudObj, markSVG, basis, fwdAz, fmtTime, W, H, glowText, pick } from './core.js';
 import * as G from './gfx.js';
-import { DOORS, keysFor } from './doors.js';
+import { DOORS, NOTE, keysFor } from './doors.js';
 import { sweep } from './kit.js';
 import * as sight from './mech-sight.js';
 import * as world from './mech-world.js';
@@ -11,7 +11,7 @@ import * as body from './mech-body.js';
 import * as listens from './mech-voice.js';
 import * as touch from './mech-touch.js';
 import * as glassy from './mech-glass.js';
-import { found, addFrag, addCall, openPhone } from './phone.js';
+import { found, addFrag, addCall, openPhone, flash } from './phone.js';
 import { openSensors, browserNote } from './sensors.js';
 import { toast, twice, check, shareInvite, shareCard, prepareShare, remind, showGear, forget, composeForTest } from './share.js';
 
@@ -173,6 +173,16 @@ async function ensureCam(face) {
   G.glass.fade(1, 250); await wait(280); await startCamera(face); await wait(150); G.glass.fade(0, 450);
 }
 const RESOLVE = ['collect', 'show', 'code', 'items', 'colors'];
+async function recap(n) {                    // before a lock: everything found behind this door, in one place
+  const fr = S.P.frags[n] || []; if (!fr.length) return;
+  hud(false); instruct('');
+  const s = $('interlude'), col = $('interCol');
+  col.innerHTML = '<p class="eyebrow line">What you found behind this door</p><div class="keyring line">' + fr.map(f => '<p class="frag">' + esc(f) + '</p>').join('') + '</div>' +
+    '<div class="note line"><p><b>' + n + '</b><span>' + esc(NOTE[n - 1]) + '</span></p></div><p class="cap line">It stays in her phone, under Keyring</p>' +
+    '<button class="go line" id="toLock" type="button">Face the lock</button>';
+  s.hidden = false; reveal(col); audio.breath(0, .03, 2, 1800);
+  await clickWhenReady('toLock'); s.hidden = true; hud(true); flash('keys');
+}
 async function playDoor(n) {
   const d = DOORS[n - 1], keys = keysFor(n), P = S.P;
   S.doorN = n; S.playing = true; hud(true); G.setMenu(false); G.glass.dread(.12, 1500);
@@ -181,6 +191,7 @@ async function playDoor(n) {
   const t0 = performance.now();
   for (let k = P.obj || 0; k < 7; k++) {
     const o = { ...d.obj[k] }; for (const key of RESOLVE) if (typeof o[key] === 'function') o[key] = o[key](keys);
+    if (k === 6 && o.type !== 'choice') { await recap(n); o.hintAt = o.hintAt || [45, 110, 200]; }   // the lock: show what you found first, help sooner
     S.objIndex = k; hudObj(n, k, o.title);
     await ensureCam(o.cam || 'environment');
     if (o.cam !== 'user') glassy.reflect(false);

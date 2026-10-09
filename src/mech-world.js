@@ -80,9 +80,8 @@ export async function align(o = {}) {
     if (AUTO && !done) aim(az, el, dt, 1.1);
   } };
   const noCompass = !C.virtual() && C.sensor.heading == null && !C.sensor.absolute;   // some browsers hide the compass
-  if (noCompass) S.easy = 1;
   instruct(o.text || 'Turn slowly.', noCompass ? 'This browser hides the compass: open the sensor check in settings' : (C.sensor.accuracy != null && (C.sensor.accuracy < 0 || C.sensor.accuracy > 30)) ? 'Move the phone in a figure-eight to wake the compass' : (o.small || 'It comes together only one way'));
-  const stop = hints(o);
+  const stop = hints(o); if (noCompass) S.easy = 1;
   await holdShot(3200);
   await until(() => done);
   stop(); audio.bed('whisper', null); audio.whisper(0, 1.4, .09, .8); audio.open(); buzz([40, 40, 80]); s.burst(160); G.glass.dread(.12, 1500);
@@ -119,26 +118,31 @@ export async function look(o = {}) {
 }
 
 /* --------------------------------------------------------------------- */
-/* follow the wisp as it circles you. { secs, speed (rad/s), el }                                                    */
+/* follow the wisp around the room: it only moves while you keep it inside the circle, and waits when you lose it.
+   { secs, speed (rad/s), el }                                                                                      */
 export async function orbit(o = {}) {
   C.unfreeze();
-  const az0 = fwdAz(basis()), wisp = keep(G.glow(.32, [3, 2.1, 1.1], .3)); G.billboard(wisp);
+  const az0 = fwdAz(basis()), wisp = keep(G.glow(.36, [3, 2.1, 1.1], .3)); G.billboard(wisp);
   const trail = keep({ group: G.particles({ count: 80, at: () => [0, 0, 0], drift: () => [(Math.random() - .5) * .2, (Math.random() - .5) * .2, -Math.random() * .2], spread: .4, size: 3, life: 1.2, boost: 2.6 }) });
   const fig = keep(G.figure(1.8)); G.billboard(fig); G.hazy(fig); fig.alpha(0);
-  let t = 0, p = 0, lost = 0, waz = az0 + .4, wel = 0;
-  const need = (o.secs || 12) * (AUTO ? .25 : 1);
+  let t = 0, p = 0, lost = 0, warned = false, waz = az0 + .35, wel = 0;
+  const need = (o.secs || 12) * (AUTO ? .25 : 1), tol = () => (S.easy ? 26 : 18) * DEG;
   S.stage = { draw(now, dt) {
-    const B = basis(), d = dirOf(waz, wel), a = angTo(B, d), on = a < (S.easy ? 20 : 13) * DEG;
-    if (on || lost < 4) t += dt;
-    waz = az0 + .4 + t * (o.speed || .55) * (1 + .25 * Math.sin(t * .7)); wel = ((o.el || 8) + 10 * Math.sin(t * .9)) * DEG;
+    const B = basis(), d = dirOf(waz, wel), a = angTo(B, d), on = a < tol();
+    if (on) { t += dt; p = clamp(p + dt / need, 0, 1); lost = 0; } else { lost += dt; p = Math.max(0, p - dt * .03); }
+    waz = az0 + .35 + t * (o.speed || .26); wel = ((o.el || 6) + 7 * Math.sin(t * .8)) * DEG;
     G.placeAt(wisp.group, waz, wel, 2.6); trail.group.position.copy(wisp.group.position);
-    if (on) { p = clamp(p + dt / need, 0, 1); lost = 0; } else { lost += dt; p = Math.max(0, p - dt * .05); }
     fig.at(waz + .25, -.08, 3); fig.alpha(lost > 4 ? Math.min(.9, (lost - 4) * .5) : Math.max(0, fig.mat.uniforms.alpha.value - dt));
+    if (lost > 4 && !warned) { warned = true; instruct('Find the light again.', 'It waits for you. The arrow points to it'); }
+    if (on && warned) { warned = false; instruct(o.text || 'Follow the light.', o.small || 'Keep it inside the circle. Turn with it'); }
     if (lost > 4 && Math.random() < dt * .4) audio.whisper(0, .8, .06);
-    const pp = project(d, B); if (pp) ring(pp[0], pp[1], 30, p, .9); else chevron(B, d, now, .7);
+    const R = C.FOCAL() * Math.tan(tol());     // the circle in the middle of the glass: keep the light inside it
+    g.save(); g.strokeStyle = on ? 'rgba(255,214,150,.95)' : 'rgba(242,234,217,.32)'; g.lineWidth = on ? 1.8 : 1; g.shadowColor = 'rgba(255,205,130,.9)'; g.shadowBlur = on ? 14 : 0; g.beginPath(); g.arc(W / 2, H / 2, R, 0, TAU); g.stroke(); g.restore();
+    ring(W / 2, H / 2, R + 12, p, .95);
+    if (!project(d, B)) chevron(B, d, now, .8);
     if (AUTO) aim(waz, wel, dt, 2.2);
   } };
-  instruct(o.text || 'Follow the light.', o.small || 'Keep it in the middle');
+  instruct(o.text || 'Follow the light.', o.small || 'Keep it inside the circle. Turn with it');
   const stop = hints(o);
   await holdShot(3200);
   await until(() => p >= 1);

@@ -64,7 +64,7 @@ export const DOORS = [
         frag: () => 'Her memo: taps on the lens. Listen again on her phone' },
       { type: 'color', title: 'It hates red', color: 'red', effect: 'bleed', reveal: ['— — —', 'The long ones first.'], say: ['Lena wore a red coat the night she vanished.'], text: 'Show it something red.',
         frag: () => 'When it saw red: — — —, the long ones first' },
-      { type: 'orbit', title: 'Follow the light', secs: 12, say: ['The light is leaving the eye.'], text: 'Follow it.', small: 'Don’t lose it' },
+      { type: 'orbit', title: 'Follow the light', secs: 12, say: ['The light is leaving the eye.', 'Follow it around the room.'], text: 'Follow it.', small: 'Keep it inside the circle. Turn with it' },
       { type: 'flicker', title: 'Lights out', show: 'figure', say: ['It wants to see you in the dark.'], text: 'Turn off the lights in your room.', small: 'Then turn them back on' },
       { type: 'dark', title: 'Close it', lines: ['The doors are not a game.', 'They are a map.'], small: 'two quick ones at the end', say: ['Now close the eye yourself.'], frag: () => 'In the dark: “two quick ones at the end”' },
       { type: 'blink', title: 'Make it blink', pattern: 'SSSFF', say: ['It only opens for the rhythm she used.'], text: 'Make it blink.', small: 'Cover the lens. Uncover it',

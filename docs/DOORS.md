@@ -18,7 +18,7 @@ passed around. To test any door on a phone: `https://fgbab.github.io/threshold/#
 | 1 | Wake the eye | brightest thing in the circle | |
 | 2 | Her voice memo | find her phone floating in the room by its whisper; look at it | taps on the lens: long, long, long, quick, quick |
 | 3 | It hates red | show it something red | "— — —, the long ones first" |
-| 4 | Follow the light | keep a wisp centered as it circles you | |
+| 4 | Follow the light | keep the light inside the circle in the middle; it only moves while you keep up and waits when you lose it (about half a turn; the figure shows if you lose it for 4 s) | |
 | 5 | Lights out | switch the room's lights off and on; something stands where the eye was | |
 | 6 | Close it | cover the lens | "two quick ones at the end" |
 | 7 | **Lock: blink** | cover and uncover the lens in her rhythm | long ×3, quick ×2 |
@@ -51,7 +51,7 @@ passed around. To test any door on a phone: `https://fgbab.github.io/threshold/#
 | 2 | Look up | ceiling | HE NEVER LOOKED BACK · XIII |
 | 3 | Not a sound | microphone: silence for 10 s | |
 | 4 | On the stairs | don't look at it | |
-| 5 | His lamp | follow the wisp | |
+| 5 | His lamp | follow the light (as in door II) | |
 | 6 | Leave the room | walk out | |
 | 7 | **Lock: thirteen steps** | exactly 13 steps without turning; then look back: the door | 13 |
 | **VII · The Silence** | | *"It hunts by sound. It lost a note. Give it back."* | |
@@ -76,7 +76,7 @@ passed around. To test any door on a phone: `https://fgbab.github.io/threshold/#
 | 3 | Hide | cover the lens and don't move while it searches | |
 | 4 | Under the bed | look at the floor | his chalk spiral |
 | 5 | Draw what he drew | from memory | |
-| 6 | His lantern | follow the wisp | |
+| 6 | His lantern | follow the light (as in door II) | |
 | 7 | **Lock: sleep** | phone face down; turn it over right after the third bell | |
 | **X · The Sky** | | *"Join my stars in the order of my name."* | |
 | 1 | Her ceiling | look up at the stars | |
@@ -113,4 +113,5 @@ passed around. To test any door on a phone: `https://fgbab.github.io/threshold/#
 
 Failing has consequences: the hunter sends you back to the start of the maze, a look at the figure costs progress,
 wrong knocks crack the glass and then make you stand completely still, wrong codes show you the face. Hints arrive only
-after a long time stuck (80 s, 170 s, 260 s) and stay cryptic.
+after a long time stuck (80 s, 170 s, 260 s; at a lock 45 s, 110 s, 200 s) and stay cryptic. Before every lock, a
+"What you found behind this door" screen lists that door's pieces and its line of the note.

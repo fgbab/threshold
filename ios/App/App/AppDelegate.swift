@@ -10,7 +10,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // The doors need the screen awake while you tilt or hold still, and their sound even with the ringer on silent.
         application.isIdleTimerDisabled = true
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+        // Play-and-record so the doors that listen can open the microphone without silencing the game; out of the speaker, past the silent switch.
+        try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .mixWithOthers, .allowBluetoothA2DP])
         return true
     }
 

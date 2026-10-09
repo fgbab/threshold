@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Threshold looks through your camera to find the doors around you. What it sees never leaves your phone.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Some doors listen: for silence, for your breath on the glass, for a note you hum back. Nothing is recorded or leaves your phone.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

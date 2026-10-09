@@ -1,9 +1,9 @@
 # Shipping Threshold
 
-The web version and the iPhone app use the same files (`index.html`, `game.js`, `room.jpg`, `fonts/`).
+`npm run build` bundles `src/` (with three.js) into `www/`, which both the web version and the iPhone app use.
 
 ## Web
-Every push to `main` publishes the game to https://fgbab.github.io/threshold/ (`.github/workflows/pages.yml`).
+Every push to `main` builds and publishes the game to https://fgbab.github.io/threshold/ (`.github/workflows/pages.yml`).
 
 ## iPhone → TestFlight (EAS, no Xcode needed)
 Threshold is a Capacitor app that builds on EAS in the **gazum-corp** Expo org (project `@gazum-corp/threshold`)
@@ -32,7 +32,7 @@ add yourself and the build, then open the invite in the TestFlight app.
 ## App Store Connect answers
 - **App Privacy:** Data Not Collected. The camera is processed on the phone; nothing is uploaded, and there are no accounts,
   analytics or ads.
-- **Camera:** the permission text is in `ios/App/App/Info.plist` (`NSCameraUsageDescription`).
+- **Camera and microphone:** the permission texts are in `ios/App/App/Info.plist` (`NSCameraUsageDescription`, `NSMicrophoneUsageDescription`). The microphone is only opened during the doors that listen.
 - **Age rating:** mild horror/fear themes; no violence, gambling or user-generated content.
 
 ## Changing native settings

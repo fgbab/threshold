@@ -84,12 +84,14 @@ gear.onclick = () => {
     '<label>Tilt sensitivity<input id="sTilt" type="range" min="0.5" max="1.8" step="0.05" value="' + S.SETTINGS.tilt + '"></label>' +
     '<label>Your name on invitations<input id="sName" type="text" maxlength="20" autocomplete="nickname" placeholder="Optional" value="' + esc(S.P.name) + '"></label>' +
     '<div class="row"><button class="go" id="sSound" type="button">Sound ' + (S.SETTINGS.sound ? 'on' : 'off') + '</button><button class="go danger" id="sReset" type="button">Erase progress</button></div>' +
+    '<label>Jump to a door (for testing)<div class="row"><select id="sDoor">' + ROMAN.map((r, i) => '<option value="' + (i + 1) + '"' + (i === Math.min(12, S.P.door) ? ' selected' : '') + '>Door ' + r + '</option>').join('') + '</select><button class="go dim" id="sJump" type="button">Open it</button></div></label>' +
     '<button class="go dim" id="sSensors" type="button">Check the sensors</button><button class="go" id="sDone" type="button">Done</button></div>';
   document.body.appendChild(s);
   const close = () => { S.SETTINGS.tilt = +$('sTilt').value; S.P.name = $('sName').value.replace(/[<>&"]/g, '').trim().slice(0, 20); store.set('settings', S.SETTINGS); saveP(); s.remove(); };
   s.addEventListener('click', e => { if (e.target === s) close(); });
   $('sDone').onclick = close;
   $('sSensors').onclick = () => { close(); openSensors(); };
+  $('sJump').onclick = () => { const n = +$('sDoor').value; close(); Object.assign(S.P, { door: n - 1, obj: 0, unlockAt: 0, warned: true }); saveP(); location.reload(); };
   $('sSound').onclick = () => { S.SETTINGS.sound = !S.SETTINGS.sound; audio.mute(!S.SETTINGS.sound); $('sSound').textContent = 'Sound ' + (S.SETTINGS.sound ? 'on' : 'off'); };
   twice($('sReset'), 'Tap again to erase', () => { forget(); location.replace(location.pathname); });
 };

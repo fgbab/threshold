@@ -3,6 +3,7 @@
 import * as C from './core.js';
 import { S, AUTO, NATIVE, SITE, $, esc, cards, store, saveP, fmtTime, W, H, drawMark, TAU, clamp, audio, loadImage, ROMAN } from './core.js';
 import * as G from './gfx.js';
+import { openSensors } from './sensors.js';
 
 export function snap(kind, raw) {            // raw: the camera's own picture (your room); otherwise the rendered moment
   if (raw) { try { const w = 540, c = document.createElement('canvas'); c.width = w; c.height = Math.round(w * H / W); c.getContext('2d').drawImage(C.still, 0, 0, c.width, c.height); cards.set(kind, c.toDataURL('image/jpeg', .82)); } catch (e) {} return; }
@@ -83,11 +84,12 @@ gear.onclick = () => {
     '<label>Tilt sensitivity<input id="sTilt" type="range" min="0.5" max="1.8" step="0.05" value="' + S.SETTINGS.tilt + '"></label>' +
     '<label>Your name on invitations<input id="sName" type="text" maxlength="20" autocomplete="nickname" placeholder="Optional" value="' + esc(S.P.name) + '"></label>' +
     '<div class="row"><button class="go" id="sSound" type="button">Sound ' + (S.SETTINGS.sound ? 'on' : 'off') + '</button><button class="go danger" id="sReset" type="button">Erase progress</button></div>' +
-    '<button class="go" id="sDone" type="button">Done</button></div>';
+    '<button class="go dim" id="sSensors" type="button">Check the sensors</button><button class="go" id="sDone" type="button">Done</button></div>';
   document.body.appendChild(s);
   const close = () => { S.SETTINGS.tilt = +$('sTilt').value; S.P.name = $('sName').value.replace(/[<>&"]/g, '').trim().slice(0, 20); store.set('settings', S.SETTINGS); saveP(); s.remove(); };
   s.addEventListener('click', e => { if (e.target === s) close(); });
   $('sDone').onclick = close;
+  $('sSensors').onclick = () => { close(); openSensors(); };
   $('sSound').onclick = () => { S.SETTINGS.sound = !S.SETTINGS.sound; audio.mute(!S.SETTINGS.sound); $('sSound').textContent = 'Sound ' + (S.SETTINGS.sound ? 'on' : 'off'); };
   twice($('sReset'), 'Tap again to erase', () => { forget(); location.replace(location.pathname); });
 };

@@ -12,6 +12,7 @@ import * as listens from './mech-voice.js';
 import * as touch from './mech-touch.js';
 import * as glassy from './mech-glass.js';
 import { found, addFrag, addCall, openPhone } from './phone.js';
+import { openSensors, browserNote } from './sensors.js';
 import { toast, twice, check, shareInvite, shareCard, prepareShare, remind, showGear, forget, composeForTest } from './share.js';
 
 const M = { ...sight, ...world, ...body, ...listens, ...touch, ...glassy };
@@ -98,7 +99,7 @@ function clickWhenReady(id, onTap) { return new Promise(res => { const b = $(id)
 function setSplash(eyebrow, lead, fines, button) {
   const col = $('splash').querySelector('.col');
   col.innerHTML = '<div class="sigil-space"></div><p class="eyebrow line">' + esc(eyebrow) + '</p><h1 class="title line">Threshold</h1><p class="lead line">' + esc(lead) + '</p>' +
-    fines.map(f => '<p class="fine line">' + esc(f) + '</p>').join('') + '<button class="go line" id="begin" type="button">' + esc(button) + '</button>';
+    fines.map(f => '<p class="fine line">' + esc(f) + '</p>').join('') + (browserNote() ? '<p class="warnline line">' + esc(browserNote()) + '</p>' : '') + '<button class="go line" id="begin" type="button">' + esc(button) + '</button>';
   $('splash').hidden = false; showGear(true); reveal(col);
   setTimeout(() => { const t = col.querySelector('.title'); if (t) t.classList.add('flicker'); }, 4500);
 }
@@ -275,6 +276,7 @@ async function boot() {
   if (TEST.screen === 'e') { G.setMenu(true); $('splash').hidden = true; return openPhone('keys'); }
   if (TEST.screen === 'c') { $('splash').hidden = true; G.setMenu(true); return glassy.call({ clip: 'three05', who: 'Player Four' }); }
   if (TEST.screen === 's') { $('splash').hidden = true; G.setMenu(false); await startCamera(); G.glass.scare(60000); return; }
+  if (MODE === 'sensors') { G.setMenu(true); $('splash').hidden = true; return openSensors(); }
   if (TEST.screen === 'm') { G.setMenu(true); menuScene(0); setSplash('A game that finds you', 'You weren’t supposed to find this.', ['There are thirteen doors. They only appear through glass. Behind the last one is whoever made them.', 'One opens each night. Play alone. Sound on.'], 'Open the first door'); return; }
   const P = S.P;
   if (P.door >= 13) { G.setMenu(true); return finale(); }

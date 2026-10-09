@@ -365,10 +365,14 @@ export const COLOR_RGB = { red: '200,64,52', blue: '70,118,210', green: '78,160,
 /* ===================================================================== */
 /* MOTION: orientation, compass, steps, knocks, stillness                 */
 /* ===================================================================== */
-export const sensor = { has: false, absolute: false, alpha: 0, beta: 45, gamma: 0, heading: null };
+export const sensor = { has: false, absolute: false, alpha: 0, beta: 45, gamma: 0, heading: null, accuracy: null };
 function onOrient(e) {
   if (e.beta == null || sensor.absolute) return; sensor.has = true; sensor.alpha = e.alpha || 0; sensor.beta = e.beta; sensor.gamma = e.gamma || 0;
-  if (typeof e.webkitCompassHeading === 'number' && e.webkitCompassHeading >= 0) sensor.heading = e.webkitCompassHeading;   // iPhone
+  if (typeof e.webkitCompassHeading === 'number' && e.webkitCompassHeading >= 0) {   // iPhone: smoothed, with its accuracy
+    const h = e.webkitCompassHeading * DEG, k = sensor.heading == null ? 1 : .2;
+    sensor.hx = (sensor.hx || 0) * (1 - k) + Math.cos(h) * k; sensor.hy = (sensor.hy || 0) * (1 - k) + Math.sin(h) * k;
+    sensor.heading = ((Math.atan2(sensor.hy, sensor.hx) / DEG) + 360) % 360; sensor.accuracy = e.webkitCompassAccuracy;
+  }
 }
 function onAbsolute(e) { if (e.beta == null || e.alpha == null) return; sensor.absolute = true; sensor.has = true; sensor.alpha = e.alpha; sensor.beta = e.beta; sensor.gamma = e.gamma || 0; }   // Android: already relative to north
 export const MO = { has: false, lp: 9.81, prev: 9.81, jerk: .2, level: 0, lastStep: 0, lastKnock: 0, onStep: null, onKnock: null };

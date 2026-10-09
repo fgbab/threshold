@@ -79,7 +79,9 @@ export async function align(o = {}) {
     if (S.easy > 1 && !project(d, B)) chevron(B, d, now, .35);
     if (AUTO && !done) aim(az, el, dt, 1.1);
   } };
-  instruct(o.text || 'Turn slowly.', o.small || 'It comes together only one way');
+  const noCompass = !C.virtual() && C.sensor.heading == null && !C.sensor.absolute;   // some browsers hide the compass
+  if (noCompass) S.easy = 1;
+  instruct(o.text || 'Turn slowly.', noCompass ? 'This browser hides the compass: open the sensor check in settings' : (C.sensor.accuracy != null && (C.sensor.accuracy < 0 || C.sensor.accuracy > 30)) ? 'Move the phone in a figure-eight to wake the compass' : (o.small || 'It comes together only one way'));
   const stop = hints(o);
   await holdShot(3200);
   await until(() => done);

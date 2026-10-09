@@ -21,7 +21,8 @@
       "ios": {
         "appName": "Threshold: Five Doors",
         "language": "en-US",
-        "sku": "threshold"
+        "sku": "threshold",
+        "ascAppId": "6820795116"
       }
     }
   }

@@ -1,1 +1,17 @@
 .DS_Store
+node_modules/
+www/
+*.log
+.env
+.env.*
+# native build outputs
+ios/App/build/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/DerivedData/
+/build/
+# signing secrets never go in git
+*.jks
+*.keystore
+*.p12
+*.mobileprovision

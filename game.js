@@ -275,7 +275,7 @@ const fmtTime = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padSt
 /* THE MARKS (five sigils, drawn in a 100 x 100 box)                      */
 /* ===================================================================== */
 const MARKS = [
-  [{ c: [50, 50, 40] }, { l: [50, 10, 84.6, 70] }, { l: [84.6, 70, 15.4, 70] }, { l: [15.4, 70, 50, 10] }, { l: [50, 10, 50, 90] }, { c: [50, 56.7, 13.3] }],
+  [{ c: [50, 50, 40] }, { l: [35, 76, 35, 46] }, { a: [50, 46, 15, Math.PI, TAU] }, { l: [65, 46, 65, 76] }, { l: [12, 76, 88, 76] }, { c: [50, 58, 5] }],   // the door
   [{ c: [50, 50, 11] }, ...Array.from({ length: 8 }, (_, i) => { const a = i * Math.PI / 4; return { l: [50 + Math.cos(a) * 20, 50 + Math.sin(a) * 20, 50 + Math.cos(a) * (i % 2 ? 32 : 40), 50 + Math.sin(a) * (i % 2 ? 32 : 40)] }; }), { a: [50, 50, 46, -2.6, -.55] }],
   [{ c: [38, 50, 24] }, { c: [62, 50, 24] }, { l: [8, 50, 92, 50] }, { l: [50, 32, 58, 50] }, { l: [58, 50, 50, 68] }, { l: [50, 68, 42, 50] }, { l: [42, 50, 50, 32] }],
   [{ l: [50, 10, 90, 50] }, { l: [90, 50, 50, 90] }, { l: [50, 90, 10, 50] }, { l: [10, 50, 50, 10] }, { c: [50, 50, 18] }],
@@ -894,7 +894,7 @@ let shotHold = false;
 const shot = async (name, ms) => { if (MODE === name) { await wait(ms); report(); shotHold = true; await new Promise(() => {}); } };
 function reveal(container) { const ls = [...container.querySelectorAll('.line')], step = Math.min(900, 6400 / Math.max(1, ls.length)); ls.forEach((el, i) => setTimeout(() => el.classList.add('on'), (250 + i * step) * SPEED)); }
 function clickWhenReady(id, onTap) { return new Promise(res => { const b = $(id); b.onclick = () => { b.onclick = null; if (onTap) onTap(); res(); }; if (AUTO) setTimeout(() => b.click(), 1600 * SPEED + 300); }); }
-const SIGIL = '<svg class="sigil-big" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40"/><path d="M50 10 L84.6 70 L15.4 70 Z"/><line x1="50" y1="10" x2="50" y2="90"/><circle cx="50" cy="56.7" r="13.3"/></svg>';
+const SIGIL = '<svg class="sigil-big" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40"/><path d="M35 76 V46 A15 15 0 0 1 65 46 V76"/><line x1="12" y1="76" x2="88" y2="76"/><circle cx="50" cy="58" r="5"/></svg>';
 function setSplash(eyebrow, lead, fines, button) {
   const col = $('splash').querySelector('.col');
   col.innerHTML = SIGIL + '<p class="eyebrow line">' + esc(eyebrow) + '</p><h1 class="title line">Threshold</h1><p class="lead line">' + esc(lead) + '</p>' +

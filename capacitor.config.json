@@ -1,0 +1,10 @@
+{
+  "appId": "org.gazum.threshold",
+  "appName": "Threshold",
+  "webDir": "www",
+  "backgroundColor": "#050404",
+  "ios": { "contentInset": "never" },
+  "plugins": {
+    "SplashScreen": { "launchAutoHide": false, "backgroundColor": "#050404", "showSpinner": false }
+  }
+}

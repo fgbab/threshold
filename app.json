@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Threshold",
+    "slug": "threshold",
+    "owner": "gazum-corp",
+    "version": "1.0.0",
+    "platforms": [
+      "ios"
+    ],
+    "ios": {
+      "bundleIdentifier": "org.gazum.threshold"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fb7e6dec-54c2-46e2-91da-a01959fc1511"
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+# EAS custom build for a Capacitor app (not Expo/React Native).
+# Capacitor keeps its Xcode project in ios/App/, one level deeper than EAS expects, so:
+#   - ios/App.xcodeproj is a symlink that lets EAS find the shared scheme and the app target;
+#   - the Gymfile below names the real project explicitly;
+#   - the build number is written by our own step (eas/configure_ios_version looks for Info.plist in the wrong folder).
+build:
+  name: Threshold iOS (Capacitor)
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - run:
+        name: Build the web game and copy it into the iOS project
+        command: |
+          npm run build
+          npx cap sync ios
+    - run:
+        name: Set the build number from EAS
+        inputs:
+          build_number: ${ eas.job.version.buildNumber }
+        command: |
+          BUILD_NUMBER="${ inputs.build_number }"
+          if [ -n "$BUILD_NUMBER" ]; then
+            sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD_NUMBER;/g" ios/App/App.xcodeproj/project.pbxproj
+          fi
+          grep -m1 "CURRENT_PROJECT_VERSION" ios/App/App.xcodeproj/project.pbxproj
+          grep -m1 "MARKETING_VERSION" ios/App/App.xcodeproj/project.pbxproj
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/configure_ios_credentials
+    - eas/generate_gymfile_from_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+          template: |
+            project("./App/App.xcodeproj")
+            suppress_xcode_output(true)
+            clean(<%- CLEAN %>)
+            scheme("<%- SCHEME %>")
+            <% if (BUILD_CONFIGURATION) { %>
+            configuration("<%- BUILD_CONFIGURATION %>")
+            <% } %>
+            export_options({
+              method: "<%- EXPORT_METHOD %>",
+              provisioningProfiles: {<% _.forEach(PROFILES, function(profile) { %>
+                "<%- profile.BUNDLE_ID %>" => "<%- profile.UUID %>",<% }); %>
+              }
+            })
+            export_xcargs "OTHER_CODE_SIGN_FLAGS=\"--keychain <%- KEYCHAIN_PATH %>\""
+            disable_xcpretty(true)
+            buildlog_path("<%- LOGS_DIRECTORY %>")
+            derived_data_path("<%- DERIVED_DATA_PATH %>")
+            result_bundle(true)
+            result_bundle_path("<%- RESULT_BUNDLE_PATH %>")
+            output_directory("<%- OUTPUT_DIRECTORY %>")
+    - eas/run_fastlane
+    - eas/find_and_upload_build_artifacts

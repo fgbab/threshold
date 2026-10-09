@@ -24,7 +24,14 @@ npx eas-cli@latest build -p ios --profile testflight-ios --auto-submit
 - `--auto-submit` uploads to App Store Connect when the build finishes. If the app record doesn't exist yet, EAS creates
   "Threshold: Five Doors" (SKU `threshold`). App Store names are unique: if it's taken, change `appName` in `eas.json`.
 
-**Later builds:** the same command. Build numbers increase automatically (stored on EAS).
+**Later builds (no logins needed now):**
+```bash
+npx eas-cli@latest build -p ios --profile testflight-ios --non-interactive --auto-submit
+```
+The credentials and an App Store Connect API key are stored on EAS, and `eas.json` names the App Store Connect app
+(`ascAppId` 6820795116), so builds and uploads run unattended. Build numbers increase automatically (stored on EAS).
+TestFlight "What to Test" notes can't be sent from the command line on our EAS plan; add them in App Store Connect.
+The App Store name is still "Threshold: Five Doors" from the first upload; rename it in App Store Connect > App Information.
 
 **TestFlight:** after processing (about 10 to 15 minutes), App Store Connect → Threshold → TestFlight → Internal Testing →
 add yourself and the build, then open the invite in the TestFlight app.

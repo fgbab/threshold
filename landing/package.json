@@ -1,0 +1,22 @@
+{
+  "name": "threshold-landing",
+  "private": true,
+  "type": "module",
+  "description": "THRESHOLD's landing page (threshold.gazum.ai): a static site, English at / and Spanish at /es/.",
+  "scripts": {
+    "fonts": "node scripts/fonts.mjs",
+    "art": "node scripts/gen-art.mjs",
+    "images": "node scripts/images.mjs",
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "lab": "node scripts/lab.mjs",
+    "score-lab": "node scripts/score-lab.mjs",
+    "review": "node scripts/review.mjs",
+    "test": "node --test api/test/*.test.mjs infra/test/*.test.mjs"
+  },
+  "devDependencies": {
+    "opentype.js": "^2.0.0",
+    "qrcode-generator": "2.0.4",
+    "sharp": "0.35.5"
+  }
+}

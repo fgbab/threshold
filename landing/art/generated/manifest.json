@@ -1,0 +1,44 @@
+{
+  "hero-tall": {
+    "model": "gpt-image-2.5-sunburst",
+    "size": "1024x1536",
+    "quality": "high",
+    "prompt": "A long, narrow apartment hallway at 3 AM, seen from one end at standing eye level: old wooden floorboards, bare plaster walls, a radiator, one empty picture hook. At the far end of the hallway, a closed plain interior door. The only light is the cold white glow of a smartphone lying face-up on the floorboards in the foreground, lighting the floor from below, and a weak warm thread of light under a side door. The middle of the hallway floor is empty and clear. Vertical framing: the hallway recedes straight ahead to a vanishing point in the middle of the frame; the far door sits a little above the centre; the glowing phone is near the bottom edge. A real phone photo taken at 3 AM: high-ISO noise, cold blue-grey, deep blacks that still keep a little detail, one weak warm practical light at most. Photoreal, shot handheld on a phone camera in near darkness, slightly soft, a little motion in the grain. No people, no faces, no hands, no text, no letters, no numbers, no logos, no watermark, no frame or border. No glowing door, no gold light, no magic.",
+    "at": "2026-10-15T19:42:04.505Z"
+  },
+  "hero-wide": {
+    "model": "gpt-image-2.5-sunburst",
+    "size": "1536x1024",
+    "quality": "high",
+    "prompt": "A long, narrow apartment hallway at 3 AM, seen from one end at standing eye level: old wooden floorboards, bare plaster walls, a radiator, one empty picture hook. At the far end of the hallway, a closed plain interior door. The only light is the cold white glow of a smartphone lying face-up on the floorboards in the foreground, lighting the floor from below, and a weak warm thread of light under a side door. The middle of the hallway floor is empty and clear. The hallway recedes toward a vanishing point a little right of centre; the left third of the frame falls into near-total darkness. A real phone photo taken at 3 AM: high-ISO noise, cold blue-grey, deep blacks that still keep a little detail, one weak warm practical light at most. Photoreal, shot handheld on a phone camera in near darkness, slightly soft, a little motion in the grain. No people, no faces, no hands, no text, no letters, no numbers, no logos, no watermark, no frame or border. No glowing door, no gold light, no magic.",
+    "at": "2026-10-15T19:42:04.800Z"
+  },
+  "church": {
+    "model": "gpt-image-2.5-sunburst",
+    "size": "1536x1024",
+    "quality": "high",
+    "prompt": "The empty nave of an old church in Valparaíso, Chile, at night: dark wooden pews, a worn stone floor, tall arched windows with faint cold moonlight. In the foreground, on the stone floor of the central aisle, a smartphone lies face-up with its screen still on, glowing cold white and lighting the stones around it. Nobody is there. A real phone photo taken at 3 AM: high-ISO noise, cold blue-grey, deep blacks that still keep a little detail, one weak warm practical light at most. Photoreal, shot handheld on a phone camera in near darkness, slightly soft, a little motion in the grain. No people, no faces, no hands, no text, no letters, no numbers, no logos, no watermark, no frame or border. No glowing door, no gold light, no magic.",
+    "at": "2026-10-15T19:42:07.781Z"
+  },
+  "mirror": {
+    "model": "gpt-image-2.5-sunburst",
+    "size": "1024x1536",
+    "quality": "high",
+    "prompt": "A small old bathroom at 3 AM with the lights off: a dark mirror above a white porcelain sink, white tiles, a towel on a hook. The mirror shows only the dark, empty room behind the camera, no reflection of anyone. A smartphone lies face-up on the edge of the sink, its cold glow the only light. A real phone photo taken at 3 AM: high-ISO noise, cold blue-grey, deep blacks that still keep a little detail, one weak warm practical light at most. Photoreal, shot handheld on a phone camera in near darkness, slightly soft, a little motion in the grain. No people, no faces, no hands, no text, no letters, no numbers, no logos, no watermark, no frame or border. No glowing door, no gold light, no magic.",
+    "at": "2026-10-15T19:42:33.443Z"
+  },
+  "smoke": {
+    "model": "gpt-image-2.5-sunburst",
+    "size": "1024x1536",
+    "quality": "high",
+    "prompt": "A tall, thin, dark humanoid figure made only of thick black smoke, standing still with its arms hanging, no face and no features, its outline dissolving into wisps at the edges and the feet. Centered, full length, isolated on a plain pure white background, high contrast, soft edges. No text, no logos, no frame or border.",
+    "at": "2026-10-15T19:42:35.055Z"
+  },
+  "valpo": {
+    "model": "gpt-image-2.5-sunburst",
+    "size": "1536x1024",
+    "quality": "high",
+    "prompt": "Valparaíso, Chile, at 3 AM, seen from high on one of its hills: steep stairways and narrow lanes climbing between old houses whose painted colours are almost lost in the dark, a few weak warm street lamps, electric cables overhead, the port far below, and the sea completely black to the horizon. A real phone photo taken at 3 AM: high-ISO noise, cold blue-grey, deep blacks that still keep a little detail, one weak warm practical light at most. Photoreal, shot handheld on a phone camera in near darkness, slightly soft, a little motion in the grain. No people, no faces, no hands, no text, no letters, no numbers, no logos, no watermark, no frame or border. No glowing door, no gold light, no magic.",
+    "at": "2026-10-15T19:42:38.344Z"
+  }
+}

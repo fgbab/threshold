@@ -1,0 +1,116 @@
+{
+  "hero-wide": {
+    "width": 1536,
+    "height": 1024,
+    "alpha": false,
+    "widths": [
+      768,
+      1152,
+      1536
+    ],
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "hero-tall": {
+    "width": 864,
+    "height": 1536,
+    "alpha": false,
+    "widths": [
+      540,
+      720,
+      864
+    ],
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "church": {
+    "width": 1536,
+    "height": 1024,
+    "alpha": false,
+    "widths": [
+      768,
+      1152,
+      1536
+    ],
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "church-tall": {
+    "width": 576,
+    "height": 1024,
+    "alpha": false,
+    "widths": [
+      576
+    ],
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "mirror": {
+    "width": 1024,
+    "height": 1536,
+    "alpha": false,
+    "widths": [
+      512,
+      768,
+      1024
+    ],
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "valpo": {
+    "width": 1536,
+    "height": 1024,
+    "alpha": false,
+    "widths": [
+      768,
+      1152,
+      1536
+    ],
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "valpo-tall": {
+    "width": 576,
+    "height": 1024,
+    "alpha": false,
+    "widths": [
+      576
+    ],
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "smoke": {
+    "width": 1024,
+    "height": 1536,
+    "alpha": true,
+    "widths": [
+      256,
+      512
+    ],
+    "formats": [
+      "webp",
+      "png"
+    ]
+  }
+}

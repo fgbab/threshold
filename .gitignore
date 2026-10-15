@@ -15,3 +15,9 @@ ios/DerivedData/
 *.keystore
 *.p12
 *.mobileprovision
+
+# Landing page (landing/): dependencies, build output and the CloudFront secret are never committed
+/landing/node_modules/
+/landing/dist/
+/landing/infra/.origin-verify
+/landing/infra/.cert-arn

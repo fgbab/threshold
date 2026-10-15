@@ -1,0 +1,300 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  THRESHOLD's landing page, threshold.gazum.ai: a private S3 bucket through CloudFront (as www.gazum.ai) with its own
+  security headers and CSP, plus the launch waitlist at /api/* (one Lambda behind CloudFront, a DynamoDB table, one
+  secret). DNS lives in Cloudflare: a DNS-only CNAME threshold.gazum.ai -> this distribution. The certificate
+  (us-east-1) is requested and DNS-validated outside this stack and passed in. Deploy with landing/infra/deploy.sh,
+  in the order of landing/infra/README.md.
+
+Parameters:
+  SiteHost:
+    Type: String
+    Default: threshold.gazum.ai
+  CertificateArn:
+    Type: String
+    AllowedPattern: '^arn:aws:acm:us-east-1:\d{12}:certificate/[0-9a-f-]{36}$'
+    Description: ACM certificate in us-east-1 for SiteHost (ISSUED).
+  OriginVerify:
+    Type: String
+    NoEcho: true
+    MinLength: 24
+    Description: A random value CloudFront sends to the waitlist; requests without it are refused.
+  InlineScriptHashes:
+    Type: String
+    Default: ''
+    MaxLength: 1400
+    AllowedPattern: "^$|^'sha256-[A-Za-z0-9+/]{43}='( 'sha256-[A-Za-z0-9+/]{43}=')*$"
+    Description: >-
+      The CSP hash sources of the pages' inline scripts (deploy.sh computes them from dist/ with infra/csp.mjs). Only
+      hashes: never 'unsafe-inline'.
+
+Resources:
+  # ── the site's files: private, reached only through CloudFront (Origin Access Control) ──
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+      OwnershipControls:
+        Rules: [{ ObjectOwnership: BucketOwnerEnforced }]
+
+  OriginAccess:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${AWS::StackName}-oac'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: CloudFrontReadsTheSite
+            Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub '${SiteBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Site}'
+
+  # a folder's address serves its index.html (/es/ → /es/index.html, /es → 301 /es/)
+  Router:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub '${AWS::StackName}-router'
+      AutoPublish: true
+      FunctionConfig:
+        Comment: folders to index.html
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+          var req = event.request, uri = req.uri;
+          if (uri.endsWith('/')) req.uri = uri + 'index.html';
+          else if (uri.lastIndexOf('.') < uri.lastIndexOf('/') + 1) {
+            return { statusCode: 301, statusDescription: 'Moved Permanently', headers: { location: { value: uri + '/' } } };
+          }
+          return req;
+        }
+
+  # the pages' headers. The CSP allows this site and nothing else: its scripts (the inline ones by hash, from
+  # infra/csp.mjs, which spells the same policy), styles, fonts, images, sound (Web Audio; <audio> from here, blob:
+  # or data:), workers and /api. No camera, microphone or location: the landing never asks (the game has its own site).
+  SiteHeaders:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub '${AWS::StackName}-headers'
+        Comment: THRESHOLD - the pages' security headers and CSP
+        SecurityHeadersConfig:
+          ContentSecurityPolicy:
+            Override: true
+            ContentSecurityPolicy: !Sub "default-src 'self'; script-src 'self' ${InlineScriptHashes}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          StrictTransportSecurity: { AccessControlMaxAgeSec: 63072000, IncludeSubdomains: true, Preload: false, Override: true }
+          ContentTypeOptions: { Override: true }
+          FrameOptions: { FrameOption: DENY, Override: true }
+          ReferrerPolicy: { ReferrerPolicy: strict-origin-when-cross-origin, Override: true }
+        CustomHeadersConfig:
+          Items:
+            - { Header: Permissions-Policy, Value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()', Override: true }
+            - { Header: Cross-Origin-Opener-Policy, Value: same-origin, Override: true }
+
+  # ── the waitlist (landing/api/waitlist.mjs): the list, its secret, the function and its URL ──
+  WaitlistTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: [{ AttributeName: pk, AttributeType: S }]
+      KeySchema: [{ AttributeName: pk, KeyType: HASH }]
+      TimeToLiveSpecification: { AttributeName: ttl, Enabled: true }   # unconfirmed addresses and rate counters expire
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true }
+      SSESpecification: { SSEEnabled: true }
+      DeletionProtectionEnabled: true
+
+  # { resend: the send-only key (set by deploy.sh secrets), signing: generated here, never shown }
+  WaitlistSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: THRESHOLD waitlist - the Resend send-only key and the link-signing secret
+      GenerateSecretString:
+        SecretStringTemplate: '{"resend":""}'
+        GenerateStringKey: signing
+        PasswordLength: 48
+        ExcludePunctuation: true
+
+  WaitlistLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-waitlist'
+      RetentionInDays: 30
+
+  WaitlistRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns: [arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole]
+      Policies:
+        - PolicyName: waitlist
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:DeleteItem]
+                Resource: !GetAtt WaitlistTable.Arn
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Ref WaitlistSecret
+
+  # the code arrives with deploy.sh api (as index.mjs); this placeholder only answers "not yet"
+  WaitlistFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: WaitlistLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-waitlist'
+      Description: THRESHOLD - the launch waitlist (threshold.gazum.ai/api/*)
+      Runtime: nodejs22.x
+      Architectures: [arm64]
+      Handler: index.handler
+      MemorySize: 256
+      Timeout: 15
+      Role: !GetAtt WaitlistRole.Arn
+      Environment:
+        Variables:
+          TABLE: !Ref WaitlistTable
+          SECRET_ARN: !Ref WaitlistSecret
+          PUBLIC_ORIGIN: !Sub 'https://${SiteHost}'
+          ORIGIN_VERIFY: !Ref OriginVerify
+      Code:
+        ZipFile: |
+          exports.handler = async () => ({ statusCode: 503, headers: { 'content-type': 'application/json' }, body: '{"error":"not_yet"}' });
+
+  WaitlistUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt WaitlistFunction.Arn
+      AuthType: NONE
+
+  # a public function URL needs both permissions: the URL's, and the invoke's, the latter only through the URL. With
+  # only the first, the URL answers 403 and CloudFront shows the site's 404 (LEYLIGHT's lesson). The code itself
+  # refuses anything without CloudFront's X-Origin-Verify.
+  WaitlistUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WaitlistFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+
+  WaitlistInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WaitlistFunction
+      Action: lambda:InvokeFunction
+      Principal: '*'
+      InvokedViaFunctionUrl: true
+
+  # what CloudFront passes to the waitlist: the visitor's address, language and body type (never the Host)
+  ApiRequests:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${AWS::StackName}-api'
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers: [CloudFront-Viewer-Address, Accept-Language, Accept, Content-Type]
+        QueryStringsConfig: { QueryStringBehavior: all }
+        CookiesConfig: { CookieBehavior: none }
+
+  Site:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: THRESHOLD - threshold.gazum.ai
+        Aliases: [!Ref SiteHost]
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        PriceClass: PriceClass_All          # Spanish-speaking players: South America is only in PriceClass_All
+        DefaultRootObject: index.html
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Origins:
+          - Id: site
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt OriginAccess.Id
+            S3OriginConfig: { OriginAccessIdentity: '' }
+          - Id: waitlist
+            DomainName: !Select [2, !Split ['/', !GetAtt WaitlistUrl.FunctionUrl]]
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols: [TLSv1.2]
+            OriginCustomHeaders:
+              - HeaderName: X-Origin-Verify
+                HeaderValue: !Ref OriginVerify
+        DefaultCacheBehavior:
+          TargetOriginId: site
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6           # Managed-CachingOptimized (files say how long)
+          ResponseHeadersPolicyId: !Ref SiteHeaders
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt Router.FunctionMetadata.FunctionARN
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: waitlist
+            ViewerProtocolPolicy: https-only
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad           # Managed-CachingDisabled
+            OriginRequestPolicyId: !Ref ApiRequests
+            # Managed-SecurityHeadersPolicy (HSTS, nosniff…; no CSP and no override): the waitlist's pages send their own
+            # CSP, X-Frame-Options and Referrer-Policy, which pass through
+            ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03
+        # (the waitlist answers 410, not 404, for faded links: these pages apply to the whole distribution)
+        CustomErrorResponses:
+          - { ErrorCode: 403, ResponseCode: 404, ResponsePagePath: /404.html, ErrorCachingMinTTL: 60 }
+          - { ErrorCode: 404, ResponseCode: 404, ResponsePagePath: /404.html, ErrorCachingMinTTL: 60 }
+
+Outputs:
+  SiteDomain:
+    Description: Point the DNS-only CNAME of SiteHost here.
+    Value: !GetAtt Site.DomainName
+  DistributionId:
+    Value: !Ref Site
+  BucketName:
+    Value: !Ref SiteBucket
+  WaitlistFunction:
+    Value: !Ref WaitlistFunction
+  WaitlistFunctionUrl:
+    Description: The function URL itself; called without CloudFront it answers 403 (deploy.sh smoke checks).
+    Value: !GetAtt WaitlistUrl.FunctionUrl
+  WaitlistTable:
+    Value: !Ref WaitlistTable
+  WaitlistSecretArn:
+    Value: !Ref WaitlistSecret

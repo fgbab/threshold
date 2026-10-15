@@ -1,0 +1,150 @@
+{
+  "budgetUSD": 3,
+  "price": {
+    "text": 0.000005,
+    "image": 0.000008,
+    "out": 0.00003
+  },
+  "calls": [
+    {
+      "at": "2026-10-15T19:42:04.505Z",
+      "name": "hero-tall",
+      "model": "gpt-image-2.5-sunburst",
+      "size": "1024x1536",
+      "quality": "high",
+      "status": 200,
+      "seconds": 31.2,
+      "usage": {
+        "input_tokens": 248,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 248
+        },
+        "output_tokens": 1372,
+        "output_tokens_details": {
+          "image_tokens": 1372,
+          "text_tokens": 0
+        },
+        "total_tokens": 1620
+      },
+      "costUSD": 0.0424
+    },
+    {
+      "at": "2026-10-15T19:42:04.800Z",
+      "name": "hero-wide",
+      "model": "gpt-image-2.5-sunburst",
+      "size": "1536x1024",
+      "quality": "high",
+      "status": 200,
+      "seconds": 31.5,
+      "usage": {
+        "input_tokens": 235,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 235
+        },
+        "output_tokens": 1372,
+        "output_tokens_details": {
+          "image_tokens": 1372,
+          "text_tokens": 0
+        },
+        "total_tokens": 1607
+      },
+      "costUSD": 0.0423
+    },
+    {
+      "at": "2026-10-15T19:42:07.781Z",
+      "name": "church",
+      "model": "gpt-image-2.5-sunburst",
+      "size": "1536x1024",
+      "quality": "high",
+      "status": 200,
+      "seconds": 34.5,
+      "usage": {
+        "input_tokens": 181,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 181
+        },
+        "output_tokens": 1372,
+        "output_tokens_details": {
+          "image_tokens": 1372,
+          "text_tokens": 0
+        },
+        "total_tokens": 1553
+      },
+      "costUSD": 0.0421
+    },
+    {
+      "at": "2026-10-15T19:42:33.443Z",
+      "name": "mirror",
+      "model": "gpt-image-2.5-sunburst",
+      "size": "1024x1536",
+      "quality": "high",
+      "status": 200,
+      "seconds": 28.6,
+      "usage": {
+        "input_tokens": 174,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 174
+        },
+        "output_tokens": 1372,
+        "output_tokens_details": {
+          "image_tokens": 1372,
+          "text_tokens": 0
+        },
+        "total_tokens": 1546
+      },
+      "costUSD": 0.042
+    },
+    {
+      "at": "2026-10-15T19:42:35.055Z",
+      "name": "smoke",
+      "model": "gpt-image-2.5-sunburst",
+      "size": "1024x1536",
+      "quality": "high",
+      "status": 200,
+      "seconds": 26.8,
+      "usage": {
+        "input_tokens": 80,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 80
+        },
+        "output_tokens": 1372,
+        "output_tokens_details": {
+          "image_tokens": 1372,
+          "text_tokens": 0
+        },
+        "total_tokens": 1452
+      },
+      "costUSD": 0.0416
+    },
+    {
+      "at": "2026-10-15T19:42:38.344Z",
+      "name": "valpo",
+      "model": "gpt-image-2.5-sunburst",
+      "size": "1536x1024",
+      "quality": "high",
+      "status": 200,
+      "seconds": 33.3,
+      "usage": {
+        "input_tokens": 171,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 171
+        },
+        "output_tokens": 1372,
+        "output_tokens_details": {
+          "image_tokens": 1372,
+          "text_tokens": 0
+        },
+        "total_tokens": 1543
+      },
+      "costUSD": 0.042
+    }
+  ],
+  "totalUSD": 0.2524,
+  "remainingUSD": 2.7476
+}

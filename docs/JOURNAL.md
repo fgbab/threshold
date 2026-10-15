@@ -5,6 +5,8 @@ The resume point for the owner and the next session. Newest first.
 ## 15 Oct 2026: the landing page for threshold.gazum.ai (built, preview, not published)
 The owner: "create the landing page for Threshold! last one is missing! with sounds and nice suspense music!"
 Every other GAZUM game already has one. This one is built and checked, and waits for the owner's OK to go live.
+**Where:** branch `landing` on GitHub (fgbab/threshold), one commit on top of `main`. Merging it into `main` also
+re-runs the Pages workflow, which rebuilds the (unchanged) web prototype.
 
 ### What it is (`landing/`, English at `/`, Spanish at `/es/`)
 - **One continuous recording made at 3 AM on someone's phone.** A viewfinder stays over every screen: thin ivory

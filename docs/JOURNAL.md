@@ -2,6 +2,16 @@
 
 The resume point for the owner and the next session. Newest first.
 
+## 15 Oct 2026 (night): the landing is live at threshold.gazum.ai
+- The owner said "publish it" (and to skip a further review pass). Merged `landing` into `main` (fast-forward) and ran
+  `landing/infra/deploy.sh` check → cert → stack → secrets → api → publish → dns → smoke: all passed (pages EN/ES,
+  privacy, /play/, headers, the waitlist's 400/201/410/403).
+- Live: https://threshold.gazum.ai and /es/ (stack `threshold-site`, distribution dvz39i8kbkjf5.cloudfront.net, Lambda
+  `threshold-site-waitlist`, mail from THRESHOLD <hello@email.gazum.ai>). gazum.ai's THRESHOLD card now says "Visit
+  THRESHOLD" and links here.
+- Known and left for later: on desktop and phones, the fixed viewfinder HUD (REC timecode, ISO line, caption) can sit
+  over section text while scrolling.
+
 ## 15 Oct 2026: the landing page for threshold.gazum.ai (built, preview, not published)
 The owner: "create the landing page for Threshold! last one is missing! with sounds and nice suspense music!"
 Every other GAZUM game already has one. This one is built and checked, and waits for the owner's OK to go live.
